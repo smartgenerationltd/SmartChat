@@ -6,6 +6,7 @@ import { getGeminiResponse } from './services/geminiService';
 import { Login } from './components/Login';
 import { StatusList } from './components/StatusList';
 import { CallsList } from './components/CallsList';
+import { CallInterface } from './components/CallInterface';
 
 // --- Helper Components to keep file count low per instruction ---
 
@@ -95,6 +96,7 @@ function App() {
     'c3': [INITIAL_CHATS[2].lastMessage!]
   });
   const [inputText, setInputText] = useState('');
+  const [activeCall, setActiveCall] = useState<{participant: User, isVideo: boolean} | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -186,12 +188,30 @@ function App() {
     }
   };
 
+  const startCall = (isVideo: boolean) => {
+    if (activeChat) {
+      setActiveCall({
+        participant: activeChat.participant,
+        isVideo
+      });
+    }
+  };
+
   if (!isLoggedIn) {
     return <Login onLogin={() => setIsLoggedIn(true)} />;
   }
 
   return (
     <HashRouter>
+      {/* Call Interface Overlay */}
+      {activeCall && (
+        <CallInterface 
+          participant={activeCall.participant} 
+          isVideo={activeCall.isVideo} 
+          onEnd={() => setActiveCall(null)} 
+        />
+      )}
+
       {/* Main Layout Container */}
       <div className="flex h-screen bg-gray-200 dark:bg-gray-900 overflow-hidden">
         
@@ -273,12 +293,16 @@ function App() {
                       </p>
                    </div>
                 </div>
-                <div className="flex gap-5 text-gray-500 dark:text-gray-300">
-                   <button className="material-icons text-xl">videocam</button>
-                   <button className="material-icons text-xl">call</button>
-                   <div className="w-[1px] h-6 bg-gray-300 dark:bg-gray-600"></div>
-                   <button className="material-icons text-xl">search</button>
-                   <button className="material-icons text-xl">more_vert</button>
+                <div className="flex gap-3 text-gray-500 dark:text-gray-300 items-center">
+                   <button onClick={() => startCall(true)} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                      <span className="material-icons text-xl">videocam</span>
+                   </button>
+                   <button onClick={() => startCall(false)} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                      <span className="material-icons text-xl">call</span>
+                   </button>
+                   <div className="w-[1px] h-6 bg-gray-300 dark:bg-gray-600 mx-2"></div>
+                   <button className="material-icons text-xl hover:text-gray-700 dark:hover:text-gray-100">search</button>
+                   <button className="material-icons text-xl hover:text-gray-700 dark:hover:text-gray-100">more_vert</button>
                 </div>
               </div>
 
