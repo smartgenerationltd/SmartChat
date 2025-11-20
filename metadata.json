@@ -1,0 +1,8 @@
+{
+  "name": "WhatsChat Web",
+  "description": "A high-fidelity WhatsApp clone built with React and Tailwind, featuring real-time messaging simulation, Gemini AI integration for smart conversations, and responsive design.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
